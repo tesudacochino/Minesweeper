@@ -1,4 +1,4 @@
-from tkinter import Button, Label
+from tkinter import Button, Label,PhotoImage
 
 import random
 import settings
@@ -113,6 +113,7 @@ class Cell:
     def show_mine(self):
         # end game
         self.cell_btn_object.configure(bg='red')
+        self.cell_btn_object.update()
         ctypes.windll.user32.MessageBoxW(0, ' You clicked on a mine', 'Game Over', 0)
         
         # sys.exit()
@@ -120,13 +121,19 @@ class Cell:
     def rigth_click_actions(self, event):
 
         if not self.is_mine_candidate:
+            icon = PhotoImage(file='icon.png')
+            flag_icon = PhotoImage(file='flag.png')
             self.cell_btn_object.configure(
-                bg='orange'
+                bg='orange',
+                # image=icon,
+                # compound=BOTTOM
             )
+            
             self.is_mine_candidate = True
         else:
             self.cell_btn_object.configure(
                 bg='SystemButtonFace'
+
             )
             self.is_mine_candidate = False
             

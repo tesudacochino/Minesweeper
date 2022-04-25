@@ -6,8 +6,11 @@ import utils
 
 # Override the setting of the windows
 root = Tk()
-root.title='Minesweeper Game'
+
+root.wm_title('Buscaminas')
 root.configure(bg="black")
+
+
 root.geometry(f'{settings.WIDTH}x{settings.HEIGHT}')
 root.resizable(False,False)
 
@@ -15,7 +18,7 @@ top_frame = Frame(
     root,
     bg='black',
     width=settings.WIDTH,
-    height=utils.height_prct(25)
+    height=utils.height_prct(20)
 )
 
 top_frame.place(x=0,y=0)
@@ -35,7 +38,7 @@ game_title.place(
 left_frame = Frame(
     root,
     bg='black',
-    width=utils.width_prct(25),
+    width=utils.width_prct(30),
     height=utils.height_prct(75)
 )
 
@@ -49,7 +52,7 @@ center_frame = Frame(
 )
 
 center_frame.place(
-    x=utils.width_prct(25),
+    x=utils.width_prct(30),
     y=utils.height_prct(25)
 )
 
