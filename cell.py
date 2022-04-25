@@ -1,12 +1,19 @@
-from tkinter import Button
+from tkinter import Button, Label
 
 import random
 import settings
+import ctypes
+import sys
 
 class Cell:
     all = []
+    cell_count = settings.CELL_COUNT
+    cell_count_label_object = None
+
     def __init__(self, x, y, is_mine=False):
         self.is_mine = is_mine
+        self.is_opened = False
+        self.is_mine_candidate = False
         self.cell_btn_object = None
         self.x = x
         self.y = y
@@ -25,6 +32,19 @@ class Cell:
 
         self.cell_btn_object = btn
 
+    @staticmethod
+    def create_cell_count_label(location):
+        lbl = Label(
+            location,
+            bg='black',
+            fg='white',
+            text=f"Cells Left:{Cell.cell_count}",
+            width=12,
+            height=4,
+            font=("",30)
+        )
+        Cell.cell_count_label_object = lbl
+
     def left_click_actions(self, event):
         if self.is_mine:
             self.show_mine()
@@ -33,6 +53,16 @@ class Cell:
                 for cell_obj in self.surrounded_cells:
                     cell_obj.show_cell()
             self.show_cell()
+
+            # detect Win state
+            if Cell.cell_count == settings.MINES_COUNT:
+                ctypes.windll.user32.MessageBoxW(0, 'You won the game¡', 'Game Over', 0)
+
+
+        # Cancell events is already open
+        self.cell_btn_object.unbind('<Button-1>', self.left_click_actions)
+        self.cell_btn_object.unbind('<Button-3>', self.rigth_click_actions)
+
 
     @property    
     def surrounded_cells(self):
@@ -50,8 +80,21 @@ class Cell:
         return cells
 
     def show_cell(self):
-        print(self.surrounded_cells_mines_length)
-        self.cell_btn_object.configure(text=f"{self.surrounded_cells_mines_length}")
+        if not self.is_opened:
+            Cell.cell_count -= 1
+            self.cell_btn_object.configure(text=f"{self.surrounded_cells_mines_length}")
+            # update cell count left
+            if Cell.cell_count_label_object:
+                Cell.cell_count_label_object.configure(
+                    text=f"Cells Left:{Cell.cell_count}"
+                    )
+            
+            self.cell_btn_object.configure(
+                bg='SystemButtonFace'
+            )
+            
+        # Mark open cell
+        self.is_opened = True
 
     @property    
     def surrounded_cells_mines_length(self):
@@ -69,12 +112,24 @@ class Cell:
 
     def show_mine(self):
         # end game
-        print("game LOST")
         self.cell_btn_object.configure(bg='red')
+        ctypes.windll.user32.MessageBoxW(0, ' You clicked on a mine', 'Game Over', 0)
+        
+        # sys.exit()
 
     def rigth_click_actions(self, event):
-        print("Rigth click")
-        print(event)
+
+        if not self.is_mine_candidate:
+            self.cell_btn_object.configure(
+                bg='orange'
+            )
+            self.is_mine_candidate = True
+        else:
+            self.cell_btn_object.configure(
+                bg='SystemButtonFace'
+            )
+            self.is_mine_candidate = False
+            
 
     @staticmethod
     def randomize_mines():
